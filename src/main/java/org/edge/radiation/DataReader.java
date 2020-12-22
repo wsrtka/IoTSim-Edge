@@ -5,16 +5,20 @@ import javafx.util.Pair;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
-import java.util.GregorianCalendar;
 
 public class DataReader {
 
     private static final String path = "src/main/resources/ASP_radiation_2020-02.tab";
 
-    private static int directRadiationColumn;
+    private int directRadiationColumn;
 
-    private static int diffuseRadiationColumn;
+    private int diffuseRadiationColumn;
+
+    private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HH:mm");
 
     public DataReader() throws IOException {
 
@@ -40,7 +44,15 @@ public class DataReader {
         }
     }
 
-    public static Pair<Integer, Integer> getData(Calendar date) throws IOException {
+    /**
+     * Returns the radiation data for the specified data. Might be null if there is no
+     * radiation data for the specified date.
+     * @param date Date and time of which data should be retrieved. Seconds and milliseconds
+     *             should be set to 0.
+     * @return {@link Pair} where key is set to direct radiation and value is set
+     * to diffused radiation at the specified DateTime
+     */
+    public Pair<Integer, Integer> getData(Calendar date) throws IOException {
 
         BufferedReader br = new BufferedReader(new FileReader(path));
         boolean afterComment = false;
@@ -52,8 +64,7 @@ public class DataReader {
                 }
             } else {
                 String[] data = line.split("\t");
-                if(!data[0].equals("Date/Time") && parseDate(data[0]).equals(date)) {
-                    //System.out.println(parseDate(data[0]).getTime());
+                if(!data[0].equals("Date/Time") && date.equals(parseDate(data[0]))) {
                     return new Pair<>(Integer.valueOf(data[directRadiationColumn]), Integer.valueOf(data[diffuseRadiationColumn]));
                 }
             }
@@ -61,13 +72,14 @@ public class DataReader {
         return null;
     }
 
-    private static Calendar parseDate(String dateTime) {
-
-        String[] parts = dateTime.split("T");
-        String[] date = parts[0].split("-");
-        String[] time = parts[1].split(":");
-        return new GregorianCalendar(Integer.parseInt(date[0]), Integer.parseInt(date[1]) - 1, Integer.parseInt(date[2]),
-                Integer.parseInt(time[0]), Integer.parseInt(time[1]));
-
+    private Calendar parseDate(String dateString) {
+        Calendar cal = Calendar.getInstance();
+        try {
+            cal.setTime(sdf.parse(dateString.replace("T", "-")));
+        } catch (Exception e) {
+            e.printStackTrace();
+            cal = null;
+        }
+        return cal;
     }
 }
