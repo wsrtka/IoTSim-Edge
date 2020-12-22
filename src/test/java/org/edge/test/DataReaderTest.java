@@ -6,6 +6,8 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -24,8 +26,8 @@ public class DataReaderTest {
     @Test
     public void readingRadiationDataTest() {
         Pair<Integer, Integer> data1 = null, data2 = null;
-        LocalDateTime date1 = LocalDateTime.of(2020, 2, 1, 0, 0);
-        LocalDateTime date2 = LocalDateTime.of(2020, 2, 29, 23, 59);
+        Calendar date1 = new GregorianCalendar(2020, Calendar.FEBRUARY, 1, 0, 0);
+        Calendar date2 = new GregorianCalendar(2020, Calendar.FEBRUARY, 29, 23, 59);
         try {
             DataReader dr = new DataReader();
             data1 = dr.getData(date1);

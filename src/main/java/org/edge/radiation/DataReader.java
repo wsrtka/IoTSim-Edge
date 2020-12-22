@@ -5,8 +5,10 @@ import javafx.util.Pair;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
 
 public class DataReader {
 
@@ -16,7 +18,7 @@ public class DataReader {
 
     private int diffuseRadiationColumn;
 
-    private final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH:mm");
+    private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HH:mm");
 
     public DataReader() throws IOException {
 
@@ -50,7 +52,7 @@ public class DataReader {
      * @return {@link Pair} where key is set to direct radiation and value is set
      * to diffused radiation at the specified DateTime
      */
-    public Pair<Integer, Integer> getData(LocalDateTime date) throws IOException {
+    public Pair<Integer, Integer> getData(Calendar date) throws IOException {
 
         BufferedReader br = new BufferedReader(new FileReader(path));
         boolean afterComment = false;
@@ -70,12 +72,14 @@ public class DataReader {
         return null;
     }
 
-    private LocalDateTime parseDate(String dateString) {
+    private Calendar parseDate(String dateString) {
+        Calendar cal = Calendar.getInstance();
         try {
-            return LocalDateTime.parse(dateString.replace("T", "-"), dtf);
+            cal.setTime(sdf.parse(dateString.replace("T", "-")));
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
+            cal = null;
         }
+        return cal;
     }
 }
