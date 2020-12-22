@@ -53,6 +53,7 @@ public class DataReader {
             } else {
                 String[] data = line.split("\t");
                 if(!data[0].equals("Date/Time") && parseDate(data[0]).equals(date)) {
+                    //System.out.println(parseDate(data[0]).getTime());
                     return new Pair<>(Integer.valueOf(data[directRadiationColumn]), Integer.valueOf(data[diffuseRadiationColumn]));
                 }
             }
@@ -65,7 +66,7 @@ public class DataReader {
         String[] parts = dateTime.split("T");
         String[] date = parts[0].split("-");
         String[] time = parts[1].split(":");
-        return new GregorianCalendar(Integer.parseInt(date[0]), Integer.parseInt(date[1]), Integer.parseInt(date[2]),
+        return new GregorianCalendar(Integer.parseInt(date[0]), Integer.parseInt(date[1]) - 1, Integer.parseInt(date[2]),
                 Integer.parseInt(time[0]), Integer.parseInt(time[1]));
 
     }

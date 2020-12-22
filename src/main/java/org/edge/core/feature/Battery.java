@@ -7,7 +7,11 @@ public class Battery {
 		return currentCapacity;
 	}
 	public void setCurrentCapacity(double currentCapacity) {
-		this.currentCapacity = currentCapacity;
+		if(currentCapacity>maxCapacity) {
+			this.currentCapacity=maxCapacity;
+		} else {
+			this.currentCapacity = currentCapacity;
+		}
 	}
 	public double getMaxCapacity() {
 		return maxCapacity;
@@ -24,5 +28,4 @@ public class Battery {
 		if(currentCapacity>maxCapacity)
 			currentCapacity=maxCapacity;
 	}
-	
 }

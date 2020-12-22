@@ -241,6 +241,23 @@ public void updateBatteryByProcessingCloudLetAndSend2(double fileSize, double sh
 	}
 
 
+	//FOR SOLAR EXAMPLE USAGE
+
+	public void supplyPower(double capacityChange) {
+		this.battery.setCurrentCapacity(this.battery.getCurrentCapacity() + capacityChange);
+	}
+
+	public boolean drainPower(double capacityChange) {
+		if(this.battery.getCurrentCapacity() - capacityChange >= 0) {
+			this.battery.setCurrentCapacity(this.battery.getCurrentCapacity() - capacityChange);
+			return true;
+		} else {
+			return false;
+		}
+
+	}
+
+
 
 
 
