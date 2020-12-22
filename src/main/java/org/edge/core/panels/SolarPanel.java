@@ -29,10 +29,17 @@ public class SolarPanel {
      */
     private Battery battery;
 
-    public SolarPanel(double efficiency, double area, Battery battery){
+    /**
+     * Energy transport speed from solar battery to device battery.
+     */
+
+    private double transportSpeed;
+
+    public SolarPanel(double efficiency, double area, Battery battery, double transportSpeed){
         this.efficiency = efficiency;
         this.area = area;
         this.battery = battery;
+        this.transportSpeed = transportSpeed;
     }
 
     /**
@@ -59,15 +66,28 @@ public class SolarPanel {
      * @param temperature - temperature of solar panel, default should be 25
      * @param angle - angle between the panel surface and sun, default should be 90
      */
-    public void supplyEnergy(double irradiance, double temperature, double angle){
-        double powerPerDevice = getCurrentPowerOutput(irradiance, temperature, angle) / (suppliedDevices.size() + 1);
+    public void supplyEnergy(double irradiance, double temperature, double angle, int seconds){
+        double powerPerDevice = getCurrentPowerOutput(irradiance, temperature, angle) / (suppliedDevices.size() + 1) * seconds / 1000;
 
         for(EdgeDevice d : suppliedDevices){
-//            TODO: some kind of a supplyPower function
-            d.supplyPower(powerPerDevice);
+            if(powerPerDevice > 0) {
+                d.supplyPower(powerPerDevice);
+                System.out.println("Supplying device ID " + d.getId() + " with " + powerPerDevice + " energy from sun. Current battery capacity: " +
+                        d.getCurrentBatteryCapacity());
+            } else if(battery.getCurrentCapacity() > 0){
+                d.supplyPower(transportSpeed);
+                battery.setCurrentCapacity(battery.getCurrentCapacity() - transportSpeed);
+                System.out.println("Supplying device ID " + d.getId() + " with " + transportSpeed + " energy from solar battery. Current device " +
+                        "battery capacity: " + d.getCurrentBatteryCapacity() + ". Current solar battery capacity: " + battery.getCurrentCapacity());
+            }
+
         }
 
-        battery.supplyPower(powerPerDevice);
+        if(powerPerDevice > 0) {
+            battery.setCurrentCapacity(battery.getCurrentCapacity() + powerPerDevice);
+            System.out.println("Supplying solar battery with " + powerPerDevice + " energy from sun. Current battery capacity: " + battery.getCurrentCapacity());
+        }
+
     }
 
     /**
