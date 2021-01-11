@@ -1,8 +1,9 @@
 package org.edge.core.panels;
 
-import com.sun.javafx.geom.Edge;
 import org.edge.core.edge.EdgeDevice;
 import org.edge.core.feature.Battery;
+import org.edge.core.feature.policy.PowerDevicesFirst;
+import org.edge.core.feature.policy.PowerDistributionStrategy;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -35,11 +36,31 @@ public class SolarPanel {
 
     private double transportSpeed;
 
+    /**
+     * Strategy for distributing the power between the innate battery and connected devices.
+     * Currently available strategies include:
+     * PowerBatteryFirst - focus on powering the solar battery; only power devices if excess energy is produced
+     * PowerDevicesFirst - prioritize charging device batteries; only charge the solar battery if excess energy is produced
+     */
+
+    private PowerDistributionStrategy strategy;
+
     public SolarPanel(double efficiency, double area, Battery battery, double transportSpeed){
         this.efficiency = efficiency;
         this.area = area;
         this.battery = battery;
         this.transportSpeed = transportSpeed;
+
+        double maxSolarBatteryChargeRate = this.transportSpeed*2;
+        this.strategy = new PowerDevicesFirst(maxSolarBatteryChargeRate, this.transportSpeed);
+    }
+
+    /**
+     * Change the strategy for distributing the power between the innate battery and connected devices
+     * @param strategy - the chosen strategy
+     */
+    public void setPowerDistributionStrategy(PowerDistributionStrategy strategy){
+        this.strategy = strategy;
     }
 
     /**
@@ -65,29 +86,11 @@ public class SolarPanel {
      * @param irradiance - ready to use solar irradiance
      * @param temperature - temperature of solar panel, default should be 25
      * @param angle - angle between the panel surface and sun, default should be 90
+     * @param seconds - simulation time in seconds
      */
     public void supplyEnergy(double irradiance, double temperature, double angle, int seconds){
-        double powerPerDevice = getCurrentPowerOutput(irradiance, temperature, angle) / (suppliedDevices.size() + 1) * seconds / 1000;
-
-        for(EdgeDevice d : suppliedDevices){
-            if(powerPerDevice > 0) {
-                d.supplyPower(powerPerDevice);
-                System.out.println("Supplying device ID " + d.getId() + " with " + powerPerDevice + " energy from sun. Current battery capacity: " +
-                        d.getCurrentBatteryCapacity());
-            } else if(battery.getCurrentCapacity() > 0){
-                d.supplyPower(transportSpeed);
-                battery.setCurrentCapacity(battery.getCurrentCapacity() - transportSpeed);
-                System.out.println("Supplying device ID " + d.getId() + " with " + transportSpeed + " energy from solar battery. Current device " +
-                        "battery capacity: " + d.getCurrentBatteryCapacity() + ". Current solar battery capacity: " + battery.getCurrentCapacity());
-            }
-
-        }
-
-        if(powerPerDevice > 0) {
-            battery.setCurrentCapacity(battery.getCurrentCapacity() + powerPerDevice);
-            System.out.println("Supplying solar battery with " + powerPerDevice + " energy from sun. Current battery capacity: " + battery.getCurrentCapacity());
-        }
-
+        double power = getCurrentPowerOutput(irradiance, temperature, angle)  * seconds / 1000;
+        strategy.distributePower(power, this.battery, seconds/60.0, this.suppliedDevices);
     }
 
     /**

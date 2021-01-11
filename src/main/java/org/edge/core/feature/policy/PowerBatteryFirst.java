@@ -3,28 +3,25 @@ package org.edge.core.feature.policy;
 import org.edge.core.edge.EdgeDevice;
 import org.edge.core.feature.Battery;
 
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import static java.lang.Math.min;
 
-public class PowerBatteryFirstStrategy extends PowerDistributionStrategy {
-    public PowerBatteryFirstStrategy(double maxSolarBatteryChargeRate, double maxDeviceBatteryChargeRate, Battery solarBattery) {
-        super(maxSolarBatteryChargeRate, maxDeviceBatteryChargeRate, solarBattery);
+/**
+ * Power distribution strategy that prioritizes charging the solar battery. It will not use solar battery to power devices. Devices are only charged when battery is full or charging at the maximum speed.
+ */
+public class PowerBatteryFirst extends PowerDistributionVerboseStrategy {
+    public PowerBatteryFirst(double maxSolarBatteryChargeRate, double maxDeviceBatteryChargeRate) {
+        super(maxSolarBatteryChargeRate, maxDeviceBatteryChargeRate);
     }
 
 
-    public void distributePower(double power, double chargeTime, List<EdgeDevice> devices) {
+    public void distributePower(double power, Battery solarBattery, double chargeTime, List<EdgeDevice> devices) {
         double solarBatteryCharge = min(min(power, solarBattery.getMaxCapacity()-solarBattery.getCurrentCapacity()), maxSolarBatteryChargeRate*chargeTime); //battery charge limited by max charge rate and max capacity
-        chargeSolarBattery(solarBatteryCharge);
-
-        List<EdgeDevice> devicesToCharge = new LinkedList<>();
-        devicesToCharge.addAll(devices);
+        chargeSolarBattery(solarBatteryCharge, solarBattery);
 
         double devicesPower = power - solarBatteryCharge;
-        double leftoverPower = distributePowerToDevices(devicesPower, chargeTime, devicesToCharge);
+        double leftoverPower = distributePowerToDevices(devicesPower, solarBattery, chargeTime, devices, false);
 
         announceLeftoverPower(leftoverPower);
     }

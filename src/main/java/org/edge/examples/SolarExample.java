@@ -134,10 +134,10 @@ public class SolarExample {
                     for(Host ed: dc.getHostList()) {
                         EdgeDevice e = (EdgeDevice) ed;
 
-                        if(!e.drainPower(e.getBattery_drainage_rate() * 3000)) {
+                        if(!e.drainPower(e.getBattery_drainage_rate() * 900)) {
                             simulationWorking = false;
                         } else {
-                            System.out.println("EdgeDevice consumed " + e.getBattery_drainage_rate() * 3000 +
+                            System.out.println("EdgeDevice consumed " + e.getBattery_drainage_rate() * 900 +
                                     " energy. Current battery capacity: " + e.getCurrentBatteryCapacity());
                         }
                     }

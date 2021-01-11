@@ -11,21 +11,16 @@ import java.util.Map;
 import static java.lang.Math.min;
 
 /**
- * A strategy for distributing the power produced by a solar panel between the innate battery and connected devices.
- *
- * Available strategies:
- * PowerBatteryFirst - focus on powering the solar battery in preparation for a ; only power devices if excess energy is produced
- * PowerDevicesFirst - prioritize charging device batteries; only charge the solar battery if excess energy is produced
+ * Abstract strategy for distributing the power produced by a solar panel between the innate battery and connected devices.
+ * Includes verbose logging methods and basic functionalities to be used in concrete implementations.
  */
-public abstract class PowerDistributionStrategy {
+public abstract class PowerDistributionVerboseStrategy implements PowerDistributionStrategy {
     protected double maxSolarBatteryChargeRate;
     protected double maxDeviceBatteryChargeRate;
-    protected Battery solarBattery;
 
-    public PowerDistributionStrategy(double maxSolarBatteryChargeRate, double maxDeviceBatteryChargeRate,  Battery solarBattery){
+    public PowerDistributionVerboseStrategy(double maxSolarBatteryChargeRate, double maxDeviceBatteryChargeRate){
         this.maxSolarBatteryChargeRate = maxSolarBatteryChargeRate;
         this.maxDeviceBatteryChargeRate = maxDeviceBatteryChargeRate;
-        this.solarBattery = solarBattery;
     }
 
     /**
@@ -35,14 +30,14 @@ public abstract class PowerDistributionStrategy {
      * @param chargeTime - charging time (in minutes)
      * @param devices - a list of devices to distribute power to
      */
-    public abstract void distributePower(double power, double chargeTime, List<EdgeDevice> devices);
+    public abstract void distributePower(double power, Battery solarBattery, double chargeTime, List<EdgeDevice> devices);
 
     /**
      * Charges the solar battery by a certain amount of power and logs the result to console.
      *
      * @param power - added charge
      */
-    protected void chargeSolarBattery(double power){
+    protected void chargeSolarBattery(double power, Battery solarBattery){
         solarBattery.setCurrentCapacity(solarBattery.getCurrentCapacity()+power);
         System.out.println("Supplying solar battery with " + power + " energy from sun. Current solar battery capacity: " + solarBattery.getCurrentCapacity());
     }
@@ -64,7 +59,7 @@ public abstract class PowerDistributionStrategy {
      * @param device - the device to charged
      * @param power - added charge
      */
-    protected void chargeDeviceFromBattery(EdgeDevice device, double power){
+    protected void chargeDeviceFromBattery(EdgeDevice device, Battery solarBattery, double power){
         device.supplyPower(power);
         solarBattery.setCurrentCapacity(solarBattery.getCurrentCapacity() - power);
         System.out.println("Supplying device ID " + device.getId() + " with " + power + " energy from the battery. Current device battery capacity: " +  device.getCurrentBatteryCapacity());
@@ -80,6 +75,7 @@ public abstract class PowerDistributionStrategy {
     }
 
     /**
+     * Distributes power evenly between a list of devices. Prevents overcharging and recursively redistributes excess power between other devices.
      *
      * @param power - energy to distribute
      * @param chargeTime - charging time (in minutes)
@@ -87,7 +83,7 @@ public abstract class PowerDistributionStrategy {
      * @param fromBattery - if true, the solar battery can be used to fill up device batteries
      * @return leftover power after charging devices
      */
-    protected double distributePowerToDevices(double power, double chargeTime, List<EdgeDevice> devices, boolean fromBattery){
+    protected double distributePowerToDevices(double power, Battery solarBattery, double chargeTime, List<EdgeDevice> devices, boolean fromBattery){
         List<EdgeDevice> devicesToCharge = new LinkedList<>();
         devicesToCharge.addAll(devices);
 
@@ -145,7 +141,7 @@ public abstract class PowerDistributionStrategy {
 
         for(EdgeDevice ed: devices){
             chargeDeviceFromSun(ed, deviceSolarCharges.get(ed));
-            if(fromBattery) chargeDeviceFromBattery(ed, deviceBatteryCharges.get(ed));
+            if(fromBattery) chargeDeviceFromBattery(ed, solarBattery, deviceBatteryCharges.get(ed));
         }
 
         return leftover;
