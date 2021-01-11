@@ -23,7 +23,7 @@ Posiada jedną metodę, *distributePower*, która wykonuje wszystkie operacje ł
 #### PowerDistributionVerboseStrategy
 Abstrakcyjna klasa opisująca strategie dystrybucji mocy z wykorzystaniem szczegółowych wypisów do konsoli.
 
-**Dostępne metody:**
+Dostępne metody:
 
 *distributePower* - abstrakcyjna metoda, której zadaniem będzie wykonanie operacji ładowania zgodnie z wybraną strategią
 
