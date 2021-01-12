@@ -60,8 +60,18 @@ public abstract class PowerDistributionVerboseStrategy implements PowerDistribut
      * @param power - added charge
      */
     protected void chargeDeviceFromBattery(EdgeDevice device, Battery solarBattery, double power){
-        device.supplyPower(power);
-        solarBattery.setCurrentCapacity(solarBattery.getCurrentCapacity() - power);
+        if(solarBattery.getCurrentCapacity() - power > 0) {
+            device.supplyPower(power);
+            solarBattery.setCurrentCapacity(solarBattery.getCurrentCapacity() - power);
+            System.out.println("Supplying device ID " + device.getId() + " with " + power + " energy from battery. Current solar battery capacity: " +  solarBattery.getCurrentCapacity());
+        } else {
+            device.supplyPower(solarBattery.getCurrentCapacity());
+            solarBattery.setCurrentCapacity(0);
+            System.out.println("Supplying device ID " + device.getId() + " with " + solarBattery.getCurrentCapacity() + " energy from battery. Current solar battery capacity: " +  solarBattery.getCurrentCapacity());
+        }
+
+
+
         System.out.println("Supplying device ID " + device.getId() + " with " + power + " energy from the battery. Current device battery capacity: " +  device.getCurrentBatteryCapacity());
     }
 

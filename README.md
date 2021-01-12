@@ -38,3 +38,9 @@ Strategia priorytetyzująca ładowanie baterii wbudowanej do panelu słonecznego
 
 #### PowerDevicesFirst
 Strategia skupiona na ładowaniu baterii urządzeń. Gdy każde z urządzeń jest ładowane z maksymalną prędkością lub ma pełną baterię, przystępuje do łądowania baterii panelu. Gdy brak energii słonecznej, wykorzystuje baterię panelu do ładowania urządzeń. 
+
+#### Logger
+Niestatyczna klasa loggera pozwalająca na zapis do kilku plików jednocześnie.
+
+#### SolarExample
+Klasa zawierająca symulację działania całego układu (urządzenia IoT ładowanego przy pomocy panelu słonecznego).

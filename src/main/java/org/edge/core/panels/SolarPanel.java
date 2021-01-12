@@ -2,8 +2,11 @@ package org.edge.core.panels;
 
 import org.edge.core.edge.EdgeDevice;
 import org.edge.core.feature.Battery;
+import org.edge.core.feature.policy.PowerBatteryFirst;
 import org.edge.core.feature.policy.PowerDevicesFirst;
 import org.edge.core.feature.policy.PowerDistributionStrategy;
+import org.edge.utils.Logger;
+import static java.lang.Math.max;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -45,14 +48,19 @@ public class SolarPanel {
 
     private PowerDistributionStrategy strategy;
 
-    public SolarPanel(double efficiency, double area, Battery battery, double transportSpeed){
+    private Logger log;
+
+
+    public SolarPanel(double efficiency, double area, Battery battery, double transportSpeed, Logger log){
         this.efficiency = efficiency;
         this.area = area;
         this.battery = battery;
         this.transportSpeed = transportSpeed;
+        this.log = log;
 
         double maxSolarBatteryChargeRate = this.transportSpeed*2;
-        this.strategy = new PowerDevicesFirst(maxSolarBatteryChargeRate, this.transportSpeed);
+        //this.strategy = new PowerDevicesFirst(maxSolarBatteryChargeRate, this.transportSpeed);
+        this.strategy = new PowerBatteryFirst(maxSolarBatteryChargeRate, this.transportSpeed);
     }
 
     /**
@@ -89,8 +97,10 @@ public class SolarPanel {
      * @param seconds - simulation time in seconds
      */
     public void supplyEnergy(double irradiance, double temperature, double angle, int seconds){
-        double power = getCurrentPowerOutput(irradiance, temperature, angle)  * seconds / 1000;
+        double power = max(0, getCurrentPowerOutput(irradiance, temperature, angle)  * seconds / 1000);
         strategy.distributePower(power, this.battery, seconds/60.0, this.suppliedDevices);
+        log.info(Double.toString(power));
+
     }
 
     /**
@@ -105,6 +115,10 @@ public class SolarPanel {
                 * area
                 * (irradiance * Math.sin(angle))
                 * (1 - 0.005 * (temperature - 25));
+    }
+
+    public double getCurrentBatteryCapacity() {
+        return this.battery.getCurrentCapacity();
     }
 
 }

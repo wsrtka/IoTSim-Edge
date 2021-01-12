@@ -58,6 +58,7 @@ import org.edge.utils.LogUtil;
 import org.edge.utils.LogUtil.Level;
 
 import com.google.gson.Gson;
+import org.edge.utils.Logger;
 
 import javax.xml.crypto.Data;
 
@@ -104,10 +105,11 @@ public class SolarExample {
         double efficiency = 50;
         double area = 3;
         double capacity = 70000;
-        double transportSpeed = 1000;
+        double transportSpeed = 2000;
+        Logger solarEnergyLog = new Logger(Level.DEBUG,"logs/solarEnergy.txt", true, true);
 
         Battery solarBattery = new Battery(capacity, 0);
-        SolarPanel solarPanel = new SolarPanel(efficiency, area, solarBattery, transportSpeed);
+        SolarPanel solarPanel = new SolarPanel(efficiency, area, solarBattery, transportSpeed, solarEnergyLog);
 
         for(Datacenter dc: datacenters) {
             for(Host ed: dc.getHostList()) {
@@ -116,6 +118,7 @@ public class SolarExample {
         }
 
         this.startSimulation(datacenters, solarPanel, startTime, dataReader);
+        solarEnergyLog.simulationFinished();
         //SOLAR PANEL CODE END
     }
 
@@ -126,6 +129,9 @@ public class SolarExample {
         double angle = 90;
         int seconds = 60;
         boolean simulationWorking = true;
+        Logger deviceBatteryLog = new Logger(Level.DEBUG,"logs/deviceBattery.txt", true, true);
+        Logger solarBatteryLog = new Logger(Level.DEBUG,"logs/solarBattery.txt", true, true);
+        Logger timeLog = new Logger(Level.DEBUG,"logs/time.txt", true, true);
 
         try {
             while(currentTime.before(endTime) && simulationWorking) {
@@ -139,6 +145,8 @@ public class SolarExample {
                         } else {
                             System.out.println("EdgeDevice consumed " + e.getBattery_drainage_rate() * 900 +
                                     " energy. Current battery capacity: " + e.getCurrentBatteryCapacity());
+                            deviceBatteryLog.info(Double.toString(e.getCurrentBatteryCapacity()));
+
                         }
                     }
                 }
@@ -153,6 +161,9 @@ public class SolarExample {
 
                     System.out.println("Current time: " + currentTime.getTime() + "\n");
                     currentTime.add(Calendar.MINUTE, 1);
+                    timeLog.info(currentTime.getTime().toString());
+                    solarBatteryLog.info(Double.toString(solarPanel.getCurrentBatteryCapacity()));
+
                 } else {
                     System.out.println("Battery run out of energy. Simulation ends");
                 }

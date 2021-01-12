@@ -1,22 +1,15 @@
 package org.edge.examples;
 
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
-import org.cloudbus.cloudsim.Cloudlet;
-import org.cloudbus.cloudsim.CloudletScheduler;
-import org.cloudbus.cloudsim.Log;
-import org.cloudbus.cloudsim.Pe;
-import org.cloudbus.cloudsim.Storage;
-import org.cloudbus.cloudsim.VmAllocationPolicy;
-import org.cloudbus.cloudsim.VmScheduler;
+import javafx.util.Pair;
+import org.cloudbus.cloudsim.*;
 import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudbus.cloudsim.provisioners.BwProvisioner;
 import org.cloudbus.cloudsim.provisioners.PeProvisioner;
@@ -26,11 +19,13 @@ import org.edge.core.edge.EdgeDataCenterBroker;
 import org.edge.core.edge.EdgeDatacenterCharacteristics;
 import org.edge.core.edge.EdgeDevice;
 import org.edge.core.edge.MicroELement;
+import org.edge.core.feature.Battery;
 import org.edge.core.feature.EdgeType;
 import org.edge.core.feature.Mobility;
 import org.edge.core.feature.Mobility.MovingRange;
 import org.edge.core.feature.operation.EdgeOperation;
 import org.edge.core.iot.IoTDevice;
+import org.edge.core.panels.SolarPanel;
 import org.edge.entity.ConfiguationEntity;
 import org.edge.entity.ConfiguationEntity.BrokerEntity;
 import org.edge.entity.ConfiguationEntity.BwProvisionerEntity;
@@ -57,6 +52,7 @@ import org.edge.protocol.CoAPProtocol;
 import org.edge.protocol.CommunicationProtocol;
 import org.edge.protocol.MQTTProtocol;
 import org.edge.protocol.XMPPProtocol;
+import org.edge.radiation.DataReader;
 import org.edge.utils.Configuration;
 import org.edge.utils.LogUtil;
 import org.edge.utils.LogUtil.Level;
@@ -703,3 +699,4 @@ public class Example1 {
 		return broker;
 	}
 }
+

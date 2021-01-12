@@ -252,6 +252,7 @@ public void updateBatteryByProcessingCloudLetAndSend2(double fileSize, double sh
 			this.battery.setCurrentCapacity(this.battery.getCurrentCapacity() - capacityChange);
 			return true;
 		} else {
+			this.battery.setCurrentCapacity(0);
 			return false;
 		}
 
