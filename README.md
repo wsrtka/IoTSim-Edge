@@ -61,3 +61,10 @@ Niestatyczna klasa loggera pozwalająca na zapis do kilku plików jednocześnie.
 
 #### SolarExample
 Klasa zawierająca symulację działania całego układu (urządzenia IoT ładowanego przy pomocy panelu słonecznego).
+
+### Porównanie strategii zasilania
+Poniższe wykresy przedstawiają zależność energii baterii urządzenia, energii baterii panelu słonecznego oraz energii wytwarzanej przez panel ze słońca od czasu dla symulacji przeprowadzonej dla 4 dni pracy urządzeń. Dla zachowania czytelności skala wykresu została zaniedbana (pojemność baterii urządzenia jest dużo większa od baterii panelu).
+
+![wykres](./img/strategy_comparison.png)
+
+Jak widać na wykresie w przypadku użycia strategii *BatteryFirst* na początku symulacji bateria panelu została naładowana do swojej maksymalnej pojemności, którą utrzymała przez cały okres trwania symulacji. Natomiast w przypadku zastosowania strategii *DevicesFirst* bateria panelu przez większość czasu trwania symulacji jest całkowicie rozładowana. Jest ona ładowana tylko wtedy gdy panel w jednostce czasu wytwarza więcej energii niż jest w stanie przekazać do urządzenia. Plusem tego podejścia jest to, że bateria urządzenia ma przez większość czasu trwania symulacji więcej energii niż przy użyciu poprzedniej strategii, co widać na wykresach.
