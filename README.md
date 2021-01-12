@@ -1,52 +1,56 @@
-# IoTSIM
+# About the project
 
-To reduce the complexity of the code, we used lombok in the pom.xml which provides getter and setter for different variables automatically. Based on the version of the Eclipse, lombok version need to updated. If this does not work, please download the jar file from  https://projectlombok.org/downloads/lombok.jar and install using command line > java -jar lombok.jar. Finally restart the Eclipse to make the change effective.
+This is a fork of the original [IoTSim repository](https://github.com/DNJha/IoTSim-Edge). The goal of our project was to extent the IoTSimEdge simulator to include irradiance data from the BSRN database and create a simple simulation of a device powered by a solar panel. This was part of a 2020/2021 winter semester IoT course at the Faculty of Computer Science, Electronics and Telecommunications of AGH University of Science and Technology, Kraków.
 
-The IoTSim-Edge codebase is dependent on CloudSim which is provided as external jar file located in EdgeIoTSim\lib folder. One has to change the location of CloudSim jar file to compile succesfully.
+# Running the example
 
-## Documentation
+TODO
 
-### Project goals
+# Comparision of energy supply strategies
 
-The goal of our project was to extent the IoTSimEdge simulator to include irradiance data from the BSRN database and create a simple simulation of a device powered by a solar panel.
-We added the *panels* package, an example and the classes described below.
+The following graphs show the energy stored both in th device battery and the solar panel battery with regards to the energy produced by the solar panel. The simulation is based on the example descirbed above. The length of the simulation is 4 days and, for better readability, the graph is not to scale.\
 
-This project was part of a 2020/2021 winter semester IoT course at the Faculty of Computer Science, Electronics and Telecommunications of AGH University of Science and Technology, Kraków.
+![wykres](./img/strategy_comparison.png)
 
-[//]: <> (Celem projektu było rozszerzenie symulatora IoTSimEdge o dane o nasłonecznieniu z bazy danych BSRN i utworzenie prostej symulacji z udziałem panelu słonecznego. W ramach projektu dodany został pakiet *panels*, przykład jego użycia oraz klasy opisane niżej.)
+As we can see, in the case of the *BatteryFirst* strategy, the battery was charged to it's maximum capacity in the beginning of the simulation and never dropped afterwards. In case of the *DevicesFirst* strategy, the battery was only sometimes at it's full capacity, as the energy produced by the solar panel was diverted to the IoT deivce. In fact, the battery was mostly without any charge. However, the device's battery was better supplied and probably would have lasted longer before fully loosing all it's charge.
 
-### Added Classes
+This poses an interesting question whever the first strategy is better because of it's longer solar panel battery lifespan. This small fork can answer many important questions based around supplying a group of IoT devices with energy - how many panels to use? Is higher solar panel efficiency better than a bigger solar panel area?
 
-#### SolarPanel
+# Added Classes
 
-Klasa reprezentująca panel fotowoltaiczny. Posiada kluczowe atrybuty panelu: *efektywność (efficiency\)* oraz *powierznię (area\)*. Ponadto dodatkowo panel przechowuje listę urządzeń, do których dostarcza prąd (*suppliedDevices*\), *baterię (battery\)*, do której przesyłana jest nadmiarowa energia, *szybkość transferu energii (transportSpeed\)* oraz opisane niżej *strategię (strategy\)* oraz *logger (log\)*.
+## SolarPanel
 
-Dostępne metody:
+Class representing a photovoltaic panel. It has all atributes needed to simulate a real life solar panel: efficiency and area. In addition, the panel stores a list of connected devices, which it supplies with energy, a battery, to which surplus energy is redirected, an energy transfer speed, a supply strategy, described below and a logger for simulation purposes.
 
-*setPowerDistributionStrategy* - ustawienie strategii zasilania urządzeń przez panel.
+Available methods:
 
-*connect* - podłączenie urządzenia do panelu poprzez dodanie do listy podłączonych urządzeń.
+*setPowerDistributionStrategy* - sets the panel's power supply energy.
 
-*disconnect* - odłączenie urządzenia od zasilania przez panel słoneczny.
+*connect* - adds a device to the list of supplied devices.
 
-*supplyEnergy* - obliczenie wyprodukowanej energii oraz dystrybuowanie jej pomiędzy wszystkie podłączone urządzenia (wraz z baterią), w zależności od ustawionej strategii zasilania.
+*disconnect* - removes a device from the list of supplied devices
 
-*getCurrentPowerOutput* - obliczenie wyprodukowanej energii na podstawie promieniowania słonecznego, temperatury otoczenia oraz kąta pomiędzy powierzchnią panelu i promieni słonecznych. Do obliczenia energii produkowanej przez panel użyty został wzór z pracy *Optimal Bidding Strategy for Microgrids Considering Renewable Energy and Building Thermal Dynamics* autorstwa Duong Tung Nguyen i Long Bao Le, 2014. Korekta ze względu na nachylenie została napisana na podstawie [strony ftexploring.com](https://www.ftexploring.com/solar-energy/sun-angle-and-insolation3.htm\).
+*supplyEnergy* - calculates the panel's energy output and directs it to it's connected devices, according to the supply strategy.
 
-*getCurrentBatteryCapacity* - zwraca aktualną pojemność baterii podłączonej do panelu.
+*getCurrentPowerOutput* - calculates the panel's energy output based on the solar irradiance, the temperature of the panel, it's efficiency and the angle between the solar panel and the solar rays. The formula used is based on the paper *Optimal Bidding Strategy for Microgrids Considering Renewable Energy and Building Thermal Dynamics* by Duong Tung Nguyen and Long Bao Le, 2014. Angle correction is based on [this website](https://www.ftexploring.com/solar-energy/sun-angle-and-insolation3.htm\).
 
-#### DataReader
-Odpowiada za odczyt danych o  z pliku .tab. Metoda *getData* przegląda plik z danymi poszukując wiersza odpowiadającego danemu dniu i czasowi. Po znalezieniu odpowiedniego wiersza zwraca dane o nasłonecznieniu w postaci pary liczb.
+*getCurrentBatteryCapacity* - returns the current battery capacity (how much more energy the battery is able to store).
 
-#### PowerDistributionStrategy
-An common interface for strategies of distributing the power produced by a solar pannel between its built-in battery and connected devices.
+## DataReader
+
+The class responsible for the BSRN data reading from a *.tab* file. It has the following method:
+
+*getData* - reads the data file and searchees for a row that corresponds with the given time and date. Returns data about solar irradiance at that time.
+
+## PowerDistributionStrategy
+A common interface for strategies of distributing the power produced by a solar pannel between its built-in battery and connected devices.
 
 I includes one method, *distributePower*, which is tasked with completing all charging operations and returns nothing.
 
 [//]: <> (Interfejs dla strategii dystrybucji energii wytworzonej przez panel słoneczny pomiędzy jego baterią a podłączonymi urządzeniami.)
 [//]: <> (Posiada jedną metodę, *distributePower*, która wykonuje wszystkie operacje ładowania i niczego nie zwraca.)
 
-#### PowerDistributionVerboseStrategy
+## PowerDistributionVerboseStrategy
 And abstract class describing a power distribution strategy using verbose console outputs.
 
 Available methods:
@@ -77,25 +81,20 @@ ogranicza szybkość przesyłu energii do wspólnej dla wszystkich urządzeń po
 
 [//]: <> (*announceLeftoverPower* - wypisanie informacji o ilości pozostałej energii.)
 
-#### PowerBatteryFirst
+## PowerBatteryFirst
 Power distribution strategy that prioritizes charging the solar battery. It will not use solar battery to power devices. Devices are only charged when battery is full or charging at the maximum speed.
 
 [//]: <> (Strategia priorytetyzująca ładowanie baterii wbudowanej do panelu słonecznego. Dba o to, aby bateria zawsze była ładowana najszybciej jak się da, a pozostałą energię wykorzystuje do ładowania podłączonych urządzeń. Nie pozwala na ładowanie urządzeń z baterii panelu słonecznego.)
 
-#### PowerDevicesFirst
+## PowerDevicesFirst
 Power distribution strategy that prioritizes charging the device batteries. It will use battery power to charge device batteries if they are not charging at maximum speed. It will only charge the solar battery if each device is either fully charged or charging at the maximum rate.
 
 [//]: <> (Strategia skupiona na ładowaniu baterii urządzeń. Gdy każde z urządzeń jest ładowane z maksymalną prędkością lub ma pełną baterię, przystępuje do łądowania baterii panelu. Gdy brak energii słonecznej, wykorzystuje baterię panelu do ładowania urządzeń. )
 
-#### Logger
-Niestatyczna klasa loggera pozwalająca na zapis do kilku plików jednocześnie.
+## Logger
 
-#### SolarExample
-Klasa zawierająca symulację działania całego układu (urządzenia IoT ładowanego przy pomocy panelu słonecznego\).
+Nonstatic logger class enabling reading and writing files.
 
-### Porównanie strategii zasilania
-Poniższe wykresy przedstawiają zależność energii baterii urządzenia, energii baterii panelu słonecznego oraz energii wytwarzanej przez panel ze słońca od czasu dla symulacji przeprowadzonej dla 4 dni pracy urządzeń. Dla zachowania czytelności skala wykresu została zaniedbana (pojemność baterii urządzenia jest dużo większa od baterii panelu\).
+## SolarExample
 
-![wykres](./img/strategy_comparison.png)
-
-Jak widać na wykresie w przypadku użycia strategii *BatteryFirst* na początku symulacji bateria panelu została naładowana do swojej maksymalnej pojemności, którą utrzymała przez cały okres trwania symulacji. Natomiast w przypadku zastosowania strategii *DevicesFirst* bateria panelu przez większość czasu trwania symulacji jest całkowicie rozładowana. Jest ona ładowana tylko wtedy gdy panel w jednostce czasu wytwarza więcej energii niż jest w stanie przekazać do urządzenia. Plusem tego podejścia jest to, że bateria urządzenia ma przez większość czasu trwania symulacji więcej energii niż przy użyciu poprzedniej strategii, co widać na wykresach.
+The class contains a simulation of an IoT device powered by a solar panel.\
