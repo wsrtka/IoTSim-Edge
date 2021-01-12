@@ -4,7 +4,11 @@ This is a fork of the original [IoTSim repository](https://github.com/DNJha/IoTS
 
 # Running the example
 
-TODO
+Clone the repository with `git clone --recursive https://github.com/wsrtka/IoTSim-Edge`.
+
+Add the cloudsim library from *lib* directory to te project.
+
+To run the example execute the main method from SolarExample class located in *src/main/java/org/edge/examples*.
 
 # Comparision of energy supply strategies
 
