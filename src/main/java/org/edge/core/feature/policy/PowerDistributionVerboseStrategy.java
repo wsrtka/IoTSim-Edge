@@ -60,19 +60,15 @@ public abstract class PowerDistributionVerboseStrategy implements PowerDistribut
      * @param power - added charge
      */
     protected void chargeDeviceFromBattery(EdgeDevice device, Battery solarBattery, double power){
-        if(solarBattery.getCurrentCapacity() - power > 0) {
+        if(solarBattery.getCurrentCapacity() - power >= 0) {
             device.supplyPower(power);
             solarBattery.setCurrentCapacity(solarBattery.getCurrentCapacity() - power);
-            System.out.println("Supplying device ID " + device.getId() + " with " + power + " energy from battery. Current solar battery capacity: " +  solarBattery.getCurrentCapacity());
         } else {
             device.supplyPower(solarBattery.getCurrentCapacity());
+            power = solarBattery.getCurrentCapacity();
             solarBattery.setCurrentCapacity(0);
-            System.out.println("Supplying device ID " + device.getId() + " with " + solarBattery.getCurrentCapacity() + " energy from battery. Current solar battery capacity: " +  solarBattery.getCurrentCapacity());
         }
-
-
-
-        System.out.println("Supplying device ID " + device.getId() + " with " + power + " energy from the battery. Current device battery capacity: " +  device.getCurrentBatteryCapacity());
+        System.out.println("Supplying device ID " + device.getId() + " with " + power + " energy from the battery. Current solar battery capacity: " +  solarBattery.getCurrentCapacity() + ". Current device battery capacity: " +  device.getCurrentBatteryCapacity());
     }
 
     /**
@@ -111,7 +107,7 @@ public abstract class PowerDistributionVerboseStrategy implements PowerDistribut
             deviceChargeLimits.put(ed, min(deviceChargeLimit, ed.getMaxBatteryCapacity()-ed.getCurrentBatteryCapacity()));
         }
 
-        while (chargePerDevice > 0 && devicesToCharge.size() > 0){
+        while (leftover > 0 && devicesToCharge.size() > 0){
             chargePerDevice = leftover/devicesToCharge.size();
             leftover = 0;
             for (EdgeDevice ed: devicesToCharge){
@@ -127,13 +123,12 @@ public abstract class PowerDistributionVerboseStrategy implements PowerDistribut
         }
 
         if(fromBattery){
-            chargePerDevice = solarBattery.getCurrentCapacity()/devicesToCharge.size();
             for (EdgeDevice ed: devicesToCharge){
                 deviceChargeLimits.put(ed, deviceChargeLimits.get(ed) - deviceSolarCharges.get(ed));
             }
-            double batteryLeftover = solarBattery.getCurrentCapacity()/devicesToCharge.size();
+            double batteryLeftover = solarBattery.getCurrentCapacity();
 
-            while (chargePerDevice > 0 && devicesToCharge.size() > 0){
+            while (batteryLeftover > 0 && devicesToCharge.size() > 0){
                 chargePerDevice = batteryLeftover/devicesToCharge.size();
                 batteryLeftover = 0;
                 for (EdgeDevice ed: devicesToCharge){
