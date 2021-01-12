@@ -93,9 +93,6 @@ public abstract class PowerDistributionVerboseStrategy implements PowerDistribut
         List<EdgeDevice> devicesToCharge = new LinkedList<>();
         devicesToCharge.addAll(devices);
 
-        double chargePerDevice = power/devices.size();
-        double leftover = power;
-
         double deviceChargeLimit = chargeTime * this.maxDeviceBatteryChargeRate;
 
         Map<EdgeDevice, Double> deviceSolarCharges = new HashMap<>();
@@ -106,6 +103,9 @@ public abstract class PowerDistributionVerboseStrategy implements PowerDistribut
             deviceBatteryCharges.put(ed, 0.0);
             deviceChargeLimits.put(ed, min(deviceChargeLimit, ed.getMaxBatteryCapacity()-ed.getCurrentBatteryCapacity()));
         }
+
+        double chargePerDevice;
+        double leftover = power;
 
         while (leftover > 0 && devicesToCharge.size() > 0){
             chargePerDevice = leftover/devicesToCharge.size();
