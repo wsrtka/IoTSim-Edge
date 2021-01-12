@@ -8,9 +8,26 @@ The IoTSim-Edge codebase is dependent on CloudSim which is provided as external 
 
 ### Założenia projektu
 
-Celem projektu było rozszerzenie symulatora IoTSimEdge o dane o nasłonecznieniu z bazy danych BSRN i utworzenie prostej symulacji z udziałem panelu słonecznego. 
+Celem projektu było rozszerzenie symulatora IoTSimEdge o dane o nasłonecznieniu z bazy danych BSRN i utworzenie prostej symulacji z udziałem panelu słonecznego. W ramach projektu dodany został pakiet *panels*, przykład jego użycia oraz klasy opisane niżej.
 
 ### Dodane klasy
+
+#### SolarPanel
+Klasa reprezentująca panel fotowoltaiczny. Posiada kluczowe atrybuty panelu: *efektywność (efficiency)* oraz *powierznię (area)*. Ponadto dodatkowo panel przechowuje listę urządzeń, do których dostarcza prąd (*suppliedDevices*), *baterię (battery)*, do której przesyłana jest nadmiarowa energia, *szybkość transferu energii (transportSpeed)* oraz opisane niżej *strategię (strategy)* oraz *logger (log)*.
+
+Dostępne metody:
+
+*setPowerDistributionStrategy* - ustawienie strategii zasilania urządzeń przez panel.
+
+*connect* - podłączenie urządzenia do panelu poprzez dodanie do listy podłączonych urządzeń.
+
+*disconnect* - odłączenie urządzenia od zasilania przez panel słoneczny.
+
+*supplyEnergy* - obliczenie wyprodukowanej energii oraz dystrybuowanie jej pomiędzy wszystkie podłączone urządzenia (wraz z baterią), w zależności od ustawionej strategii zasilania.
+
+*getCurrentPowerOutput* - obliczenie wyprodukowanej energii na podstawie promieniowania słonecznego, temperatury otoczenia oraz kąta pomiędzy powierzchnią panelu i promieni słonecznych. Do obliczenia energii produkowanej przez panel użyty został wzór z pracy *Optimal Bidding Strategy for Microgrids Considering Renewable Energy and Building Thermal Dynamics* autorstwa Duong Tung Nguyen i Long Bao Le, 2014. Korekta ze względu na nachylenie została napisana na podstawie [strony ftexploring.com](https://www.ftexploring.com/solar-energy/sun-angle-and-insolation3.htm).
+
+*getCurrentBatteryCapacity* - zwraca aktualną pojemność baterii podłączonej do panelu.
 
 #### DataReader
 Odpowiada za odczyt danych o  z pliku .tab. Metoda getData(Calendar date) przegląda plik z danymi poszukując wiersza odpowiadającego danemu dniu i czasowi. Po znalezieniu odpowiedniego wiersza zwraca dane o nasłonecznieniu w postaci pary liczb.
