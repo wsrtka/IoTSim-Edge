@@ -36,7 +36,7 @@ Dostępne metody:
 *getCurrentBatteryCapacity* - zwraca aktualną pojemność baterii podłączonej do panelu.
 
 #### DataReader
-Odpowiada za odczyt danych o  z pliku .tab. Metoda getData(Calendar date\) przegląda plik z danymi poszukując wiersza odpowiadającego danemu dniu i czasowi. Po znalezieniu odpowiedniego wiersza zwraca dane o nasłonecznieniu w postaci pary liczb.
+Odpowiada za odczyt danych o  z pliku .tab. Metoda *getData* przegląda plik z danymi poszukując wiersza odpowiadającego danemu dniu i czasowi. Po znalezieniu odpowiedniego wiersza zwraca dane o nasłonecznieniu w postaci pary liczb.
 
 #### PowerDistributionStrategy
 An common interface for strategies of distributing the power produced by a solar pannel between its built-in battery and connected devices.
