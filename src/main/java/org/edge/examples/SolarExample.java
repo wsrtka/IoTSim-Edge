@@ -4,9 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
-import java.text.DecimalFormat;
 import java.util.*;
-import java.util.concurrent.Callable;
 
 import javafx.util.Pair;
 import org.cloudbus.cloudsim.*;
@@ -22,26 +20,11 @@ import org.edge.core.edge.MicroELement;
 import org.edge.core.feature.Battery;
 import org.edge.core.feature.EdgeType;
 import org.edge.core.feature.Mobility;
-import org.edge.core.feature.Mobility.MovingRange;
 import org.edge.core.feature.operation.EdgeOperation;
 import org.edge.core.iot.IoTDevice;
 import org.edge.core.panels.SolarPanel;
 import org.edge.entity.ConfiguationEntity;
-import org.edge.entity.ConfiguationEntity.BrokerEntity;
-import org.edge.entity.ConfiguationEntity.BwProvisionerEntity;
-import org.edge.entity.ConfiguationEntity.ConnectionEntity;
-import org.edge.entity.ConfiguationEntity.EdgeDataCenterEntity;
-import org.edge.entity.ConfiguationEntity.EdgeDatacenterCharacteristicsEntity;
-import org.edge.entity.ConfiguationEntity.HostEntity;
-import org.edge.entity.ConfiguationEntity.IotDeviceEntity;
-import org.edge.entity.ConfiguationEntity.LogEntity;
 import org.edge.entity.ConfiguationEntity.MELEntities;
-import org.edge.entity.ConfiguationEntity.MobilityEntity;
-import org.edge.entity.ConfiguationEntity.NetworkModelEntity;
-import org.edge.entity.ConfiguationEntity.PeEntity;
-import org.edge.entity.ConfiguationEntity.RamProvisionerEntity;
-import org.edge.entity.ConfiguationEntity.VmAllcationPolicyEntity;
-import org.edge.entity.ConfiguationEntity.VmSchedulerEntity;
 import org.edge.entity.ConnectionHeader;
 import org.edge.entity.MicroElementTopologyEntity;
 import org.edge.exception.MicroElementNotFoundException;
@@ -54,13 +37,11 @@ import org.edge.protocol.MQTTProtocol;
 import org.edge.protocol.XMPPProtocol;
 import org.edge.radiation.DataReader;
 import org.edge.utils.Configuration;
-import org.edge.utils.LogUtil;
 import org.edge.utils.LogUtil.Level;
 
 import com.google.gson.Gson;
 import org.edge.utils.Logger;
 
-import javax.xml.crypto.Data;
 
 public class SolarExample {
 
@@ -78,18 +59,6 @@ public class SolarExample {
 
         broker.submitVmList(melList);
         broker.submitConnection(header);
-
-        this.initLog(conf);
-        String indent = "    ";
-        LogUtil.info("Start-exp");
-        LogUtil.info("Number of IoT "+indent+edgeDevices.size());
-        LogUtil.info("Config of IoT Battary"+indent+edgeDevices.get(0).getBattery().getCurrentCapacity());
-        //CloudSim.startSimulation();
-
-        //List<Cloudlet> cloudletReceivedList = broker.getCloudletReceivedList();
-
-        //printCloudletList(cloudletReceivedList, melList,datacenters);
-        //LogUtil.simulationFinished();
 
         //SOLAR PANEL CODE BEGIN
 
@@ -176,18 +145,6 @@ public class SolarExample {
     }
     //SOLAR PANEL CODE END
 
-    private void initLog(ConfiguationEntity conf) {
-        ConfiguationEntity.LogEntity logEntity = conf.getLogEntity();
-        boolean saveLogToFile = logEntity.isSaveLogToFile();
-        if(saveLogToFile) {
-            String logFilePath = logEntity.getLogFilePath();
-            String logLevel = logEntity.getLogLevel();
-            boolean append = logEntity.isAppend();
-            LogUtil.initLog(LogUtil.Level.valueOf(logLevel.toUpperCase()), logFilePath, saveLogToFile,append);
-        }
-
-
-    }
 
     public void init() {
         Configuration annotations = Example2A.class.getAnnotation(Configuration.class);
